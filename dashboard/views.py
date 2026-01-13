@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import default_storage
 
-def tu_vista_de_procesamiento(request):
+def index(request):
     if request.method == 'POST':
         archivo_inmail = request.FILES.get('inmail_file')
         archivo_arff = request.FILES.get('arff_file')

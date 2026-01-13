@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #a9aaacff; color: #333; font-family: 'Segoe UI', sans-serif; }
+        .section-box { background: #ffffff; border: 1px solid #dee2e6; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .border-red { border-top: 6px solid #dc3545; }
+        .border-blue { border-top: 6px solid #0d6efd; }
+        .border-green { border-top: 6px solid #198754; }
+        .border-orange { border-top: 6px solid #ffc107; }
+        .border-cyan { border-top: 6px solid #0dcaf0; }
+        .content-section { display: none; margin-top: 20px; }
+        .nav-btn { border: none; border-radius: 8px; padding: 20px; color: white; font-weight: bold; transition: all 0.3s ease; width: 100%; margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; }
+        .nav-btn:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 6px 12px rgba(0,0,0,0.2); }
+        .code-box { background: #2b2b2b; color: #f8f8f2; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem; overflow-x: auto; margin-bottom: 15px; }
+        .table-responsive { max-height: 400px; overflow-y: auto; font-size: 0.85rem; border: 1px solid #eee; border-radius: 5px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="fw-bold text-secondary mb-4 text-center">Data Pipeline Dashboard</h1>
+
+        <div class="section-box border-blue text-center">
+            <h5 class="fw-bold mb-3">Cargar Dataset .arff</h5>
+            <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                {% csrf_token %}
+                <div class="input-group mb-3">
+                    <input type="file" name="archivo_arff" class="form-control" accept=".arff" required>
+                    <button class="btn btn-primary px-4 fw-bold" type="submit" id="btnSubmit">PROCESAR</button>
+                </div>
+                {% if not inicial %}
+                <div class="d-flex justify-content-center align-items-center gap-2">
+                    <span class="badge bg-success p-2">Archivo cargado: {{ titulo }}</span>
+                    <a href="/" class="btn btn-sm btn-light border">Limpiar Todo</a>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+
+        {% if not inicial %}
+        <div class="row g-2 mb-4">
+            <div class="col-md-4"><button class="nav-btn bg-danger" onclick="showSection('sec-05')">05 - Regresión Logística</button></div>
+            <div class="col-md-4"><button class="nav-btn bg-primary" onclick="showSection('sec-06')">06 - Visualización y Análisis</button></div>
+            <div class="col-md-4"><button class="nav-btn bg-success" onclick="showSection('sec-07')">07 - División Dataset</button></div>
+            <div class="col-md-6"><button class="nav-btn bg-warning text-dark" onclick="showSection('sec-08')">08 - Preparación de Datos</button></div>
+            <div class="col-md-6"><button class="nav-btn bg-info text-dark" onclick="showSection('sec-09')">09 - Pipeline Personalizado</button></div>
+        </div>
+
+        <div id="sec-05" class="content-section">
+            <div class="section-box border-red">
+                <span class="badge bg-danger mb-3">MÓDULO 05</span>
+                <h3>Regresión Logística / NLP</h3>
+                <p><strong>Estructura:</strong> {{ datos_05.mail_dict }}</p>
+                <h6>Vista Previa del Texto Procesado:</h6>
+                <div class="code-box">{{ datos_05.prep_email_text }}</div>
+                <button class="btn btn-outline-secondary mt-4 shadow-sm" onclick="hideAll()">← Regresar al Menú Principal</button>
+            </div>
+        </div>
+
+        <div id="sec-06" class="content-section">
+            <div class="section-box border-blue">
+                <span class="badge bg-primary mb-3">MÓDULO 06</span>
+                <h3 class="mb-4">Visualización y Análisis Estadístico</h3>
+
+                <div class="row">
+                    <div class="col-12">
+                        <h6>Ficheros en el Directorio:</h6>
+                        <div class="code-box">{{ fotos_06.datos_tecnicos.cv_features }}</div>
+                        
+                        <h6>Llaves del Diccionario ARFF:</h6>
+                        <div class="code-box">{{ fotos_06.datos_tecnicos.oh_values }}</div>
+                        
+                        <h6>Contenido de df['data'] (Muestra):</h6>
+                        <div class="code-box" style="white-space: pre-wrap;">{{ fotos_06.datos_tecnicos.data_raw }}</div>
+
+                        <h6>Atributos del Dataset:</h6>
+                        <div class="code-box" style="white-space: pre-wrap;">{{ fotos_06.datos_tecnicos.arff_attributes }}</div>
+
+                        <h6>Nombres de Atributos Parseados:</h6>
+                        <div class="code-box" style="white-space: pre-wrap;">{{ fotos_06.datos_tecnicos.nombres_atributos }}</div>
+
+                        <h6>Información del DataSet (df.info):</h6>
+                        <div class="code-box" style="white-space: pre; font-size: 0.75rem;">{{ fotos_06.datos_tecnicos.info_stats }}</div>
+
+                        <h6>Conteo de Protocolos:</h6>
+                        <div class="code-box" style="white-space: pre;">{{ fotos_06.datos_tecnicos.protocol_counts }}</div>
+                    </div>
+                </div>
+
+                <h6 class="mt-4">Estadística Descriptiva (df.describe):</h6>
+                <div class="table-responsive">
+                    {{ fotos_06.datos_tecnicos.tabla_stats|safe }}
+                </div>
+
+                <h6 class="mt-4">Vista Previa del DataFrame (Head & Tail):</h6>
+                <div class="table-responsive">
+                    {{ fotos_06.datos_tecnicos.tabla_final|safe }}
+                </div>
+
+                <h4 class="mt-5 mb-3 text-primary fw-bold">Gráficos de Distribución y Correlación</h4>
+                <div class="row g-3">
+                    {% for img in fotos_06.visualizaciones %}
+                    <div class="col-md-6 text-center">
+                        <div class="bg-light p-2 border rounded shadow-sm">
+                            <img src="data:image/png;base64,{{ img }}" class="img-fluid rounded">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button class="btn btn-outline-secondary mt-5 shadow-sm" onclick="hideAll()">← Regresar al Menú Principal</button>
+            </div>
+        </div>
+
+        <div id="sec-07" class="content-section">
+            <div class="section-box border-green">
+                <span class="badge bg-success mb-3">MÓDULO 07</span>
+                <h3>Construcción del Particionado Completo</h3>
+
+                <h6>Resultados de la Función (train_val_test_split):</h6>
+                <div class="code-box mb-4" style="white-space: pre; color: #ffffffff; border-left: 4px solid #272822;">
+                    {{ fotos_07.longitudes }}
+                </div>
+
+                <h6>Detalles del Conjunto de Entrenamiento (train_set.info()):</h6>
+                <div class="code-box mb-4" style="white-space: pre; font-size: 0.7rem; background: #1a1a1a;">
+                    {{ fotos_07.info_train }}
+                </div>
+
+                <h6>Tamaño del Dataset Original:</h6>
+                <div class="code-box mb-3" style="color: #ffffffff; font-weight: bold;">
+                    {{ fotos_07.longitud_total }}
+                </div>
+                <h6>Longitudes con Estratificación (protocol_type):</h6>
+                <div class="code-box mb-4" style="white-space: pre; color: #f8f8f2; border-left: 4px solid #272822; background: #272822;">
+                    {{ fotos_07.longitudes }}
+                </div>
+
+                <div class="row g-3">
+                    {% for img in fotos_07.visualizaciones %}
+                    <div class="col-md-6 text-center">
+                        <div class="bg-light p-2 border rounded shadow-sm">
+                            <img src="data:image/png;base64,{{ img }}" class="img-fluid rounded">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-outline-secondary mt-4 shadow-sm" onclick="hideAll()">← Regresar al Menú Principal</button>
+            </div>
+        </div>
+
+        <div id="sec-08" class="content-section">
+            <div class="section-box border-orange">
+                <span class="badge bg-warning text-dark mb-3">MÓDULO 08</span>
+                <h3>Técnicas de Codificación (Categorical Encoding)</h3>
+
+                <div class="code-box mb-4" style="white-space: pre; color: #ffffffff; border-left: 4px solid #272822;;">
+                    {{ datos_08.longitudes }}
+                </div>
+
+                <h6>Comprobar atributos con valores nulos:</h6>
+                <div class="code-box mb-4" style="white-space: pre; font-size: 0.8rem; color: #ffffffff;">
+                    {{ datos_08.check_nulos }}
+                </div>
+
+                <div class="table-responsive mb-4 shadow-sm border rounded">
+                    {{ datos_08.X_train_nulos|safe }}
+                </div>
+
+                <div class="code-box mb-4" style="color: #ffffffff; font-weight: bold;">
+                    {{ datos_08.texto_eliminados }}
+                </div>
+                <h6>Categorías detectadas (factorize):</h6>
+                <div class="code-box mb-3" style="color: #66d9ef;">
+                    {{ datos_08.categorias_factorize }}
+                </div>
+
+                <h6>Codificación con OrdinalEncoder (Sklearn):</h6>
+                <div class="code-box mb-3" style="white-space: pre; color: #ffffffff;">
+                    {{ datos_08.mapeo_ordinal }}
+                </div>
+
+                <h6>Categorías aprendidas por el OrdinalEncoder:</h6>
+                <div class="code-box mb-4" style="color: #ffffffff;">
+                    {{ datos_08.encoder_categories }}
+                </div>
+        
+                <button class="btn btn-outline-secondary mt-4 shadow-sm" onclick="hideAll()">← Regresar al Menú Principal</button>
+            </div>
+        </div>
+
+        <div id="sec-09" class="content-section">
+            <div class="section-box border-cyan">
+                <span class="badge bg-info text-dark mb-3">MÓDULO 09</span>
+                <h3 class="mb-4">Pipeline Avanzado y Transformadores Personalizados</h3>
+
+                <h6>Resultados del Particionado (Estratificado):</h6>
+                <div class="code-box mb-4" style="white-space: pre; color: #0dcaf0; border-left: 4px solid #0dcaf0; background: #1a1a1a; padding: 15px;">
+                    {{ datos_09.longitudes }}
+                </div>
+
+                <hr class="my-4" style="border-top: 1px solid #333;">
+
+                <h6>X_train: Primeros 10 registros (Con Nulos Inyectados):</h6>
+                <p class="text-muted small">Se inyectaron valores NaN en 'src_bytes' y 'dst_bytes' para probar la robustez del pipeline.</p>
+                <div class="table-responsive mb-4 shadow-sm border rounded" style="font-size: 0.7rem; max-height: 400px; overflow-y: auto;">
+                    {{ datos_09.table_head_10|safe }}
+                </div>
+
+
+                <div class="alert alert-warning py-2" style="font-size: 0.85rem; border-left: 4px solid #f39c12;">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>Nota Técnica:</strong> Dado que el <b>Imputer</b> no admite valores categóricos, se procedió a filtrar únicamente los atributos numéricos antes de aplicar el escalado.
+                </div>
+
+                <h6>X_train_prep: Resultado tras Imputer (Median) y StandardScaler:</h6>
+                <div class="table-responsive mb-4 shadow-sm border rounded" style="font-size: 0.7rem; background: #f8f9fa;">
+                    {{ datos_09.table_prep_5|safe }}
+                </div> 
+            </div>
+
+            <div class="mt-5">
+                <button class="btn btn-outline-info shadow-sm" onclick="hideAll()">
+                    <i class="fas fa-arrow-left"></i> Regresar al Menú Principal
+                </button>
+            </div>
+        </div>
+    
+
+
+
+        {% else %}
+        <div class="alert alert-light text-center py-5 border shadow-sm">
+            <h4 class="text-muted">No hay datos procesados</h4>
+            <p>Selecciona un archivo .arff arriba para comenzar el análisis.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+        function hideAll() {
+            document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        document.getElementById('uploadForm').onsubmit = function() {
+            document.getElementById('btnSubmit').disabled = true;
+            document.getElementById('btnSubmit').innerHTML = 'Procesando...';
+        };
+    </script>
+</body>
+</html>

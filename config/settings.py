@@ -25,11 +25,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://web-production-0cbbf.up.railway.app',
 ]
 
-ALLOWED_HOSTS = [
-    'web-production-0cbbf.up.railway.app',
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

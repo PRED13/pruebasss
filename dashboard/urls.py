@@ -1,8 +1,7 @@
-# En dashboard/urls.py
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Cambia 'views.index' por el nombre real de tu función
-    path('', views.tu_vista_de_procesamiento, name='index'), 
+    # Esta línea debe coincidir exactamente con el nombre de la función en views.py
+    path('', views.tu_vista_de_procesamiento, name='index'),
 ]
